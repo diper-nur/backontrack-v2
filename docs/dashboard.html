@@ -1,12 +1,48 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | BackOnTrack</title><script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | BackOnTrack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
 <body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen" style="font-family:Inter,system-ui,sans-serif">
-<nav class="flex items-center justify-between px-8 py-5 border-b border-white/10"><a class="text-indigo-400 font-bold text-2xl" href="index.html">BackOnTrack</a><button id="signout" class="text-sm px-4 py-2 rounded-lg border border-gray-600">Sign out</button></nav>
-<main class="max-w-5xl mx-auto mt-16 px-6"><h1 class="text-4xl font-bold mb-4">Your dashboard</h1>
-<p class="text-gray-300 mb-8">Logged in as <span id="email">Checking session...</span></p>
-<div class="bg-white/10 border border-white/20 rounded-xl p-6"><h2 class="text-xl font-semibold mb-2">Phase 1: Authentication</h2>
-<p class="text-gray-300">A working Supabase Auth session is required to access this page. Original classes, tasks, study materials and AI tools will be restored in the next phases.</p></div>
-<p id="status" role="status" class="text-sm text-red-300 mt-4"></p></main>
-<script type="module" src="assets/js/dashboard.js"></script></body></html>
+  <nav class="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10">
+    <a class="text-indigo-400 font-bold text-2xl" href="index.html">BackOnTrack</a>
+    <button id="signout" type="button" class="text-sm px-4 py-2 rounded-lg border border-gray-600 hover:bg-gray-700">Sign out</button>
+  </nav>
+  <main class="max-w-5xl mx-auto mt-12 md:mt-16 px-6 pb-16">
+    <h1 class="text-4xl font-bold mb-3">Your dashboard</h1>
+    <p class="text-gray-300 mb-8">Logged in as <span id="email">Checking session...</span></p>
+    <section class="grid md:grid-cols-2 gap-5 mb-8" aria-label="Manage classes">
+      <form id="create-class-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-semibold">Create a class</h2>
+        <label for="class-name" class="block text-sm text-gray-300">Class name</label>
+        <input id="class-name" name="class-name" minlength="2" maxlength="80" required autocomplete="off"
+               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white"
+               placeholder="e.g. Physics 12A">
+        <button id="create-class-button" type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Create class</button>
+      </form>
+      <form id="join-class-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-semibold">Join a class</h2>
+        <label for="join-code" class="block text-sm text-gray-300">16-character invitation code</label>
+        <input id="join-code" name="join-code" minlength="16" maxlength="16" required autocomplete="off" spellcheck="false"
+               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white uppercase tracking-widest"
+               placeholder="e.g. A1B2C3D4E5F60708">
+        <button id="join-class-button" type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Join class</button>
+      </form>
+    </section>
+    <p id="status" role="status" aria-live="polite" class="text-sm text-gray-200 mb-5 min-h-6"></p>
+    <section class="bg-white/10 border border-white/20 rounded-xl p-6" aria-label="Your classes">
+      <div class="flex justify-between items-center mb-4 gap-3">
+        <h2 class="text-xl font-semibold">Your classes</h2>
+        <button id="refresh-classes" type="button" class="text-sm rounded-lg border border-gray-600 px-3 py-2 hover:bg-gray-700">Refresh</button>
+      </div>
+      <ul id="classes-list" class="space-y-3"><li class="text-gray-400">Loading classes...</li></ul>
+    </section>
+    <p class="text-sm text-gray-400 mt-6">Study materials, tasks and AI tools will be restored in the next phases.</p>
+  </main>
+  <script type="module" src="assets/js/dashboard.js"></script>
+</body>
+</html>
