@@ -45,7 +45,12 @@ async function loadClasses() {
   for (const item of data) {
     const li = document.createElement('li');
     li.className = 'border border-gray-600 rounded-lg px-4 py-3 bg-gray-900/50';
-    appendText(li, 'div', item.name, 'font-semibold');
+    const link = document.createElement('a');
+    link.href = `class.html?id=${encodeURIComponent(item.id)}`;
+    link.textContent = item.name;
+    link.className = 'font-semibold text-indigo-200 hover:text-white hover:underline underline-offset-4';
+    li.appendChild(link);
+    appendText(li, 'div', 'Open subjects & tasks', 'text-xs text-gray-400 mt-1');
     appendText(li, 'div', item.created_by === currentUser.id ? 'Owner' : 'Member', 'text-xs text-gray-400 mt-1');
     if (item.created_by === currentUser.id) {
       appendText(li, 'div', `Invitation code: ${item.join_code}`, 'text-sm font-mono text-indigo-300 mt-2 break-all');

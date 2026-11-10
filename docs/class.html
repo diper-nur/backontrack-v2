@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class | BackOnTrack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen" style="font-family:Inter,system-ui,sans-serif">
+  <nav class="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10 gap-4">
+    <a class="text-indigo-400 font-bold text-2xl" href="index.html">BackOnTrack</a>
+    <div class="flex items-center gap-3">
+      <a href="dashboard.html" class="text-sm text-gray-300 hover:text-white">All classes</a>
+      <button id="signout" type="button" class="text-sm px-4 py-2 rounded-lg border border-gray-600 hover:bg-gray-700">Sign out</button>
+    </div>
+  </nav>
+  <main class="max-w-5xl mx-auto mt-10 md:mt-14 px-5 pb-20">
+    <p class="text-sm text-indigo-300 font-semibold mb-2">CLASS WORKSPACE</p>
+    <h1 id="class-title" class="text-3xl md:text-4xl font-bold">Loading class...</h1>
+    <p class="text-gray-400 mt-2 mb-5">Signed in as <span id="email">Checking session...</span> · <span id="membership-role">Member</span></p>
+    <p id="status" role="status" aria-live="polite" class="text-sm min-h-6 mb-5 text-gray-300"></p>
+
+    <section class="grid md:grid-cols-2 gap-5 mb-8" aria-label="Create subjects and tasks">
+      <form id="subject-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-3">
+        <h2 class="text-xl font-semibold">Subjects</h2>
+        <p class="text-sm text-gray-400">Subjects are shared with all members of this class.</p>
+        <label class="block text-sm text-gray-300" for="subject-name">New subject name</label>
+        <input id="subject-name" type="text" maxlength="80" minlength="2" required autocomplete="off"
+               placeholder="e.g. Mechanics"
+               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white">
+        <button id="add-subject" type="submit" disabled class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Add subject</button>
+        <ul id="subjects-list" class="space-y-2 text-sm text-gray-300 pt-2"><li>Loading subjects...</li></ul>
+      </form>
+      <form id="task-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-3">
+        <h2 class="text-xl font-semibold">Add personal task</h2>
+        <p class="text-sm text-gray-400">Only you can view and manage your tasks.</p>
+        <label class="block text-sm text-gray-300" for="task-title">Title *</label>
+        <input id="task-title" type="text" maxlength="180" required autocomplete="off"
+               placeholder="e.g. Finish chapter 4 exercises"
+               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white">
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm text-gray-300 mb-2" for="task-subject">Subject</label>
+            <select id="task-subject" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-3 text-white">
+              <option value="">General / no subject</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-300 mb-2" for="task-date">Deadline *</label>
+            <input id="task-date" type="date" required class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-3 text-white">
+          </div>
+        </div>
+        <label class="block text-sm text-gray-300" for="task-description">Description</label>
+        <textarea id="task-description" rows="2" maxlength="3000" placeholder="What needs to be done?"
+                  class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white"></textarea>
+        <label class="block text-sm text-gray-300" for="task-notes">Notes</label>
+        <textarea id="task-notes" rows="2" maxlength="3000" placeholder="Optional notes"
+                  class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white"></textarea>
+        <button id="add-task" type="submit" disabled class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Add task</button>
+      </form>
+    </section>
+
+    <section class="bg-white/10 border border-white/20 rounded-xl p-6 mb-6" aria-label="Task progress">
+      <div class="flex flex-wrap gap-4 justify-between items-end">
+        <div>
+          <h2 class="text-xl font-semibold">Your progress</h2>
+          <p id="progress-counts" class="text-sm text-gray-400 mt-1">Loading...</p>
+        </div>
+        <span id="progress-percent" class="font-bold text-3xl text-indigo-300">0%</span>
+      </div>
+      <div class="w-full bg-gray-700 rounded-full h-3 mt-4" role="progressbar" aria-label="Tasks completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-wrapper">
+        <div id="progress-bar" class="bg-indigo-500 h-3 rounded-full transition-all" style="width:0%"></div>
+      </div>
+      <p id="upcoming" class="text-sm text-amber-200 mt-4" aria-live="polite"></p>
+    </section>
+
+    <section class="bg-white/10 border border-white/20 rounded-xl p-6" aria-label="Your tasks">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="text-xl font-semibold">Your tasks</h2>
+        <div class="flex items-center gap-3">
+          <label for="task-filter" class="text-sm text-gray-300">Show</label>
+          <select id="task-filter" class="bg-gray-900 border border-gray-600 text-sm rounded-lg px-3 py-2">
+            <option value="all">All</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+          <button id="refresh" class="text-sm rounded-lg border border-gray-600 px-3 py-2 hover:bg-gray-700" type="button">Refresh</button>
+        </div>
+      </div>
+      <ul id="tasks-list" class="space-y-3"><li class="text-gray-400">Loading tasks...</li></ul>
+    </section>
+    <p class="text-sm text-gray-400 mt-5">Document uploads, AI-generated questions and recovery plans will be added in the following phase.</p>
+  </main>
+  <script type="module" src="assets/js/class.js?v=phase3-1"></script>
+</body>
+</html>
