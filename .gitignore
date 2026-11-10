@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+vendor/
+assets/uploads/
+docs/assets/uploads/
+legacy/
+BackOnTrack-Original/
+*.log
+.DS_Store
+supabase/.temp/
+supabase/.branches/
