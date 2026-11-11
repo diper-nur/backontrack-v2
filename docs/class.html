@@ -1,97 +1,40 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Class | BackOnTrack</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen" style="font-family:Inter,system-ui,sans-serif">
-  <nav class="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10 gap-4">
-    <a class="text-indigo-400 font-bold text-2xl" href="index.html">BackOnTrack</a>
-    <div class="flex items-center gap-3">
-      <a href="dashboard.html" class="text-sm text-gray-300 hover:text-white">All classes</a>
-      <button id="signout" type="button" class="text-sm px-4 py-2 rounded-lg border border-gray-600 hover:bg-gray-700">Sign out</button>
-    </div>
-  </nav>
-  <main class="max-w-5xl mx-auto mt-10 md:mt-14 px-5 pb-20">
-    <p class="text-sm text-indigo-300 font-semibold mb-2">CLASS WORKSPACE</p>
-    <h1 id="class-title" class="text-3xl md:text-4xl font-bold">Loading class...</h1>
-    <p class="text-gray-400 mt-2 mb-5">Signed in as <span id="email">Checking session...</span> · <span id="membership-role">Member</span></p>
-    <p id="status" role="status" aria-live="polite" class="text-sm min-h-6 mb-5 text-gray-300"></p>
-
-    <section class="grid md:grid-cols-2 gap-5 mb-8" aria-label="Create subjects and tasks">
-      <form id="subject-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-3">
-        <h2 class="text-xl font-semibold">Subjects</h2>
-        <p class="text-sm text-gray-400">Subjects are shared with all members of this class.</p>
-        <label class="block text-sm text-gray-300" for="subject-name">New subject name</label>
-        <input id="subject-name" type="text" maxlength="80" minlength="2" required autocomplete="off"
-               placeholder="e.g. Mechanics"
-               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white">
-        <button id="add-subject" type="submit" disabled class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Add subject</button>
-        <ul id="subjects-list" class="space-y-2 text-sm text-gray-300 pt-2"><li>Loading subjects...</li></ul>
-      </form>
-      <form id="task-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-3">
-        <h2 class="text-xl font-semibold">Add personal task</h2>
-        <p class="text-sm text-gray-400">Only you can view and manage your tasks.</p>
-        <label class="block text-sm text-gray-300" for="task-title">Title *</label>
-        <input id="task-title" type="text" maxlength="180" required autocomplete="off"
-               placeholder="e.g. Finish chapter 4 exercises"
-               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white">
-        <div class="grid sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-sm text-gray-300 mb-2" for="task-subject">Subject</label>
-            <select id="task-subject" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-3 text-white">
-              <option value="">General / no subject</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm text-gray-300 mb-2" for="task-date">Deadline *</label>
-            <input id="task-date" type="date" required class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-3 text-white">
-          </div>
-        </div>
-        <label class="block text-sm text-gray-300" for="task-description">Description</label>
-        <textarea id="task-description" rows="2" maxlength="3000" placeholder="What needs to be done?"
-                  class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white"></textarea>
-        <label class="block text-sm text-gray-300" for="task-notes">Notes</label>
-        <textarea id="task-notes" rows="2" maxlength="3000" placeholder="Optional notes"
-                  class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white"></textarea>
-        <button id="add-task" type="submit" disabled class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Add task</button>
-      </form>
-    </section>
-
-    <section class="bg-white/10 border border-white/20 rounded-xl p-6 mb-6" aria-label="Task progress">
-      <div class="flex flex-wrap gap-4 justify-between items-end">
-        <div>
-          <h2 class="text-xl font-semibold">Your progress</h2>
-          <p id="progress-counts" class="text-sm text-gray-400 mt-1">Loading...</p>
-        </div>
-        <span id="progress-percent" class="font-bold text-3xl text-indigo-300">0%</span>
-      </div>
-      <div class="w-full bg-gray-700 rounded-full h-3 mt-4" role="progressbar" aria-label="Tasks completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-wrapper">
-        <div id="progress-bar" class="bg-indigo-500 h-3 rounded-full transition-all" style="width:0%"></div>
-      </div>
-      <p id="upcoming" class="text-sm text-amber-200 mt-4" aria-live="polite"></p>
-    </section>
-
-    <section class="bg-white/10 border border-white/20 rounded-xl p-6" aria-label="Your tasks">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 class="text-xl font-semibold">Your tasks</h2>
-        <div class="flex items-center gap-3">
-          <label for="task-filter" class="text-sm text-gray-300">Show</label>
-          <select id="task-filter" class="bg-gray-900 border border-gray-600 text-sm rounded-lg px-3 py-2">
-            <option value="all">All</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-          </select>
-          <button id="refresh" class="text-sm rounded-lg border border-gray-600 px-3 py-2 hover:bg-gray-700" type="button">Refresh</button>
-        </div>
-      </div>
-      <ul id="tasks-list" class="space-y-3"><li class="text-gray-400">Loading tasks...</li></ul>
-    </section>
-    <p class="text-sm text-gray-400 mt-5">Document uploads, AI-generated questions and recovery plans will be added in the following phase.</p>
-  </main>
-  <script type="module" src="assets/js/class.js?v=phase3-1"></script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f6ff"><title>Tasks | BackOnTrack</title><link rel="stylesheet" href="assets/css/app-v4.css?v=4.1"></head><body><header class="site-header"><div class="shell"><nav class="nav" aria-label="Main navigation">
+  <a class="nav-logo" href="dashboard.html">BackOnTrack<span style="color:#9c8efb">.</span></a>
+  <div class="nav-links">
+    <a href="dashboard.html"  data-i18n="dashboard">Dashboard</a>
+    <a href="join.html"  data-i18n="join">Join Class</a>
+    <a id="nav-tasks" href="dashboard.html" aria-current="page" data-i18n="tasks">Tasks</a>
+    <span class="nav-soon" title="Coming in a future phase" data-i18n="ai">AI Recommendations</span>
+    <span class="nav-soon" title="Coming in a future phase" data-i18n="materials">Materials</span>
+  </div>
+  <div class="nav-tools">
+    <div class="language-switch" aria-label="Language"><button class="lang-btn" data-lang="en" aria-pressed="true" type="button">EN</button><button class="lang-btn" data-lang="ru" aria-pressed="false" type="button">RU</button><button class="lang-btn" data-lang="kz" aria-pressed="false" type="button">KZ</button></div>
+    <span class="user-chip" id="nav-user"></span>
+    <button class="button primary compact" type="button" id="signout" data-i18n="signout">Logout</button>
+  </div>
+</nav></div></header><main class="shell page">
+  <div class="page-head"><p class="mini-label" data-i18n="myTaskList">Your personal tasks</p><h1 data-i18n="yourTasks">My Tasks</h1><div class="title-rule"></div>
+   <div class="page-row"><div class="class-picker"><label for="class-select" data-i18n="selectClass">Select a class</label><select id="class-select" aria-label="Class"><option value="">Loading...</option></select></div><a href="dashboard.html" class="button outline compact" data-i18n="goBack">Back to dashboard</a></div>
+  </div>
+  <p id="status" class="inline-status" role="status" aria-live="polite"></p>
+  <h3><span data-i18n="class">Class</span>: <span id="class-title">—</span></h3>
+  <form id="task-form" class="card" autocomplete="off"><div class="panel-top"><h2 data-i18n="addTask">Add Task</h2><span class="pill-hint" data-i18n="personalTasks">Only your tasks are visible to you.</span></div>
+   <div class="horizontal-form"><div class="field"><label for="task-title" data-i18n="taskTitle">Task title</label><input id="task-title" maxlength="180" required placeholder="e.g. Finish chapter 4"></div>
+   <div class="field"><label for="task-description" data-i18n="taskDesc">Description</label><input id="task-description" maxlength="3000" placeholder="e.g. 6 exercises"></div>
+   <div class="field"><label for="task-notes" data-i18n="taskNotes">Notes</label><input id="task-notes" maxlength="3000" placeholder="e.g. Focus on examples"></div>
+   <div class="field"><label for="task-date" data-i18n="deadline">Deadline</label><input id="task-date" type="date" required></div>
+   <button id="add-task" class="button primary" type="submit" disabled data-i18n="addTask">Add Task</button></div>
+   <div class="field" style="max-width:310px;margin-top:14px"><label for="task-subject" data-i18n="subject">Subject</label><select id="task-subject"><option value="">General</option></select></div>
+  </form>
+  <section class="section-heading"><h2 data-i18n="yourTasks">Your Tasks</h2><div class="task-toolbar"><label for="task-filter" data-i18n="show">Show</label><select id="task-filter"><option value="all" data-i18n="all">All</option><option value="pending" data-i18n="pending">Pending</option><option value="completed" data-i18n="completed">Completed</option></select><button id="refresh" class="button outline compact" type="button" data-i18n="refresh">Refresh</button></div></section>
+  <div class="card table-card"><div class="table-scroll"><table class="task-table"><thead><tr><th data-i18n="tasks">Task</th><th data-i18n="description">Description</th><th data-i18n="notes">Notes</th><th data-i18n="deadline">Deadline</th><th data-i18n="status">Status</th><th data-i18n="actions">Actions</th></tr></thead><tbody id="tasks-tbody"><tr><td colspan="6" class="empty">Loading tasks...</td></tr></tbody></table></div></div>
+  <div class="section-heading"><h2 data-i18n="progress">Progress</h2></div>
+  <div class="summary-panel"><div class="summary-item"><strong id="stat-total">0</strong><span data-i18n="total">Total Tasks</span></div><div class="summary-item"><strong id="stat-completed">0</strong><span data-i18n="completed">Completed</span></div><div class="summary-item"><strong id="stat-progress">0%</strong><span data-i18n="progress">Progress</span></div></div>
+  <div class="section-heading"><h2 data-i18n="subjects">Subjects</h2></div>
+  <section class="card"><p class="help-text" data-i18n="sharedSubject">Subjects are shared with class members.</p><form id="subject-form" class="subject-form" autocomplete="off"><label for="subject-name" class="sr-only" data-i18n="newSubject">New subject</label><input id="subject-name" minlength="2" maxlength="80" required data-i18n-placeholder="newSubject" placeholder="New subject"><button id="add-subject" class="button primary" type="submit" disabled data-i18n="addSubject">Add subject</button></form><ul id="subjects-list" class="subject-list"></ul></section>
+  <p class="page-footer" data-i18n="soonText">File uploads and AI recommendations will be connected in later phases.</p>
+</main><aside id="deadline-alert" class="floating-alert" role="alert" aria-label="Upcoming deadlines" hidden>
+<div class="title"><span data-i18n="upcoming">Upcoming Deadlines</span><button id="deadline-close" type="button" aria-label="Close">×</button></div>
+<ul id="deadline-list" class="deadline-list"></ul>
+<button id="deadline-dismiss" type="button" class="button primary" data-i18n="dismiss">Dismiss</button>
+</aside><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><script type="module" src="assets/js/class.js?v=4.1"></script></body></html>

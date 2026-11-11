@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f6ff"><title>Join Class | BackOnTrack</title><link rel="stylesheet" href="assets/css/app-v4.css?v=4.1"></head><body><header class="site-header"><div class="shell"><nav class="nav" aria-label="Main navigation">
+  <a class="nav-logo" href="dashboard.html">BackOnTrack<span style="color:#9c8efb">.</span></a>
+  <div class="nav-links">
+    <a href="dashboard.html"  data-i18n="dashboard">Dashboard</a>
+    <a href="join.html" aria-current="page" data-i18n="join">Join Class</a>
+    <a id="nav-tasks" href="dashboard.html"  data-i18n="tasks">Tasks</a>
+    <span class="nav-soon" title="Coming in a future phase" data-i18n="ai">AI Recommendations</span>
+    <span class="nav-soon" title="Coming in a future phase" data-i18n="materials">Materials</span>
+  </div>
+  <div class="nav-tools">
+    <div class="language-switch" aria-label="Language"><button class="lang-btn" data-lang="en" aria-pressed="true" type="button">EN</button><button class="lang-btn" data-lang="ru" aria-pressed="false" type="button">RU</button><button class="lang-btn" data-lang="kz" aria-pressed="false" type="button">KZ</button></div>
+    <span class="user-chip" id="nav-user"></span>
+    <button class="button primary compact" type="button" id="signout" data-i18n="signout">Logout</button>
+  </div>
+</nav></div></header><main class="shell page narrow">
+ <div class="page-head"><p class="mini-label">CLASS MANAGEMENT</p><h1 data-i18n="createOrJoin">Create or join a class</h1><div class="title-rule"></div></div>
+ <div class="form-grid">
+  <form id="create-class-form" class="card form-panel stack" autocomplete="off"><div><h2 data-i18n="createClass">Create a class</h2><p class="subtle" data-i18n="newClassPrompt">Set up a new class and invite members.</p></div><div class="field"><label for="class-name" data-i18n="newClassName">Class name</label><input id="class-name" required minlength="2" maxlength="80" placeholder="e.g. Physics 12A"></div><button id="create-class-button" type="submit" class="button primary" data-i18n="create">Create class</button></form>
+  <form id="join-class-form" class="card form-panel stack" autocomplete="off"><div><h2 data-i18n="joinClass">Join a class</h2><p class="subtle" data-i18n="joinPrompt">Enter a 16-character invitation code to join a class.</p></div><div class="field"><label for="join-code" data-i18n="classCode">Invitation code</label><input id="join-code" required minlength="16" maxlength="16" spellcheck="false" style="text-transform:uppercase" placeholder="A1B2C3D4E5F60708"></div><button id="join-class-button" type="submit" class="button primary" data-i18n="joinBtn">Join class</button></form>
+ </div>
+ <p id="status" class="inline-status" role="status" aria-live="polite"></p>
+ <div class="section-heading"><h2 data-i18n="yourClasses">Your classes</h2><a href="dashboard.html" class="button outline compact" data-i18n="goBack">Back to dashboard</a></div>
+ <section class="card"><div id="class-shortcuts" class="quick-links"></div></section>
+</main><aside id="deadline-alert" class="floating-alert" role="alert" aria-label="Upcoming deadlines" hidden>
+<div class="title"><span data-i18n="upcoming">Upcoming Deadlines</span><button id="deadline-close" type="button" aria-label="Close">×</button></div>
+<ul id="deadline-list" class="deadline-list"></ul>
+<button id="deadline-dismiss" type="button" class="button primary" data-i18n="dismiss">Dismiss</button>
+</aside><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><script type="module" src="assets/js/join.js?v=4.1"></script></body></html>

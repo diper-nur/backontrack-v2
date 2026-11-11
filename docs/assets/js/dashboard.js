@@ -1,140 +1,22 @@
-import { client, requireConfigured } from './supabase-client.js';
+import {client,requireConfigured} from './supabase-client.js';
+import {$,t,setupCommon,showUser,updateNavClass,status,toast,chosenClass,storeClass,sortTasks,progress,updateChart,el,createTaskRow,renderDeadlineAlert} from './ui-v4.js';
 
-const status = document.querySelector('#status');
-const email = document.querySelector('#email');
-const list = document.querySelector('#classes-list');
-const createForm = document.querySelector('#create-class-form');
-const joinForm = document.querySelector('#join-class-form');
-const createButton = document.querySelector('#create-class-button');
-const joinButton = document.querySelector('#join-class-button');
-const refreshButton = document.querySelector('#refresh-classes');
+let user=null;let classes=[];let classId=null;let tasks=[];
 
-let currentUser = null;
-
-function showStatus(message, isError = false) {
-  status.textContent = message;
-  status.className = `text-sm mb-5 min-h-6 ${isError ? 'text-red-300' : 'text-green-300'}`;
+function updateDeadlineButton(){const b=$('#show-deadlines');b.disabled=!classId;}
+function renderShortcuts(){const host=$('#class-shortcuts');host.replaceChildren();if(!classes.length){host.append(el('p','subtle',t('noClass')));return;}for(const cls of classes){const a=el('a','class-chip',cls.name);a.href=`class.html?id=${encodeURIComponent(cls.id)}`;a.setAttribute('aria-current',String(cls.id===classId));host.append(a);}}
+function renderSummary(){const p=progress(tasks);$('#stat-total').textContent=p.total;$('#stat-completed').textContent=p.completed;$('#stat-pending').textContent=p.pending;$('#stat-progress').textContent=`${p.percent}%`;$('#chart-percent').textContent=`${p.percent}%`;updateChart($('#chart'),tasks);
+  const tbody=$('#tasks-tbody');tbody.replaceChildren();const sorted=sortTasks(tasks);if(!sorted.length){const tr=el('tr');const td=el('td','empty',t('noTasks'));td.colSpan=5;tr.append(td);tbody.append(tr);}else for(const task of sorted)tbody.append(createTaskRow(task));
+  if(user&&classId)renderDeadlineAlert(tasks,user.id,classId);else $('#deadline-alert').hidden=true;
 }
-
-function appendText(parent, tag, text, className = '') {
-  const element = document.createElement(tag);
-  element.textContent = text;
-  if (className) element.className = className;
-  parent.appendChild(element);
-  return element;
+async function loadTasks(){tasks=[];if(!classId){renderSummary();return;}status('');const {data,error}=await client.from('tasks').select('id,title,description,notes,due_date,status,created_at').eq('class_id',classId).eq('user_id',user.id).order('created_at',{ascending:false});if(error){renderSummary();throw new Error(`Tasks: ${error.message}`);}tasks=data||[];renderSummary();}
+async function activateClass(id){if(!classes.some(c=>c.id===id)){classId=null;tasks=[];$('#class-title').textContent='—';updateNavClass(null);$('#open-tasks').href='join.html';renderShortcuts();renderSummary();status(t('noClass'));updateDeadlineButton();return;}
+  classId=id;storeClass(user.id,id);$('#class-select').value=id;$('#class-title').textContent=classes.find(c=>c.id===id).name;updateNavClass(id);$('#open-tasks').href=`class.html?id=${encodeURIComponent(id)}`;renderShortcuts();updateDeadlineButton();await loadTasks();}
+async function refreshClasses(){const {data,error}=await client.from('classes').select('id,name,created_by,join_code').order('name');if(error)throw error;classes=data||[];
+  const select=$('#class-select');select.replaceChildren();for(const c of classes){const o=el('option','',c.name);o.value=c.id;select.append(o)}if(!classes.length){const o=el('option','',t('noClass'));o.value='';select.append(o);select.disabled=true;}else select.disabled=false;
+  const requested=new URLSearchParams(location.search).get('class');const chosen=chosenClass(user.id,classes,requested);await activateClass(chosen);
 }
-
-async function loadClasses() {
-  if (!currentUser) return;
-  list.replaceChildren();
-  appendText(list, 'li', 'Loading classes...', 'text-gray-400');
-
-  const { data, error } = await client.from('classes')
-    .select('id,name,created_by,join_code,created_at')
-    .order('name', { ascending: true });
-
-  list.replaceChildren();
-  if (error) {
-    showStatus(`Cannot load classes: ${error.message}`, true);
-    return;
-  }
-  if (!data?.length) {
-    appendText(list, 'li', 'No classes yet. Create one or join with a code.', 'text-gray-400');
-    return;
-  }
-  for (const item of data) {
-    const li = document.createElement('li');
-    li.className = 'border border-gray-600 rounded-lg px-4 py-3 bg-gray-900/50';
-    const link = document.createElement('a');
-    link.href = `class.html?id=${encodeURIComponent(item.id)}`;
-    link.textContent = item.name;
-    link.className = 'font-semibold text-indigo-200 hover:text-white hover:underline underline-offset-4';
-    li.appendChild(link);
-    appendText(li, 'div', 'Open subjects & tasks', 'text-xs text-gray-400 mt-1');
-    appendText(li, 'div', item.created_by === currentUser.id ? 'Owner' : 'Member', 'text-xs text-gray-400 mt-1');
-    if (item.created_by === currentUser.id) {
-      appendText(li, 'div', `Invitation code: ${item.join_code}`, 'text-sm font-mono text-indigo-300 mt-2 break-all');
-    }
-    list.appendChild(li);
-  }
-}
-
-async function init() {
-  if (!requireConfigured(status)) return;
-  try {
-    const { data: { user }, error } = await client.auth.getUser();
-    if (error || !user) {
-      window.location.replace('login.html');
-      return;
-    }
-    currentUser = user;
-    email.textContent = user.email ?? 'Authenticated';
-    await loadClasses();
-  } catch (error) {
-    showStatus(`Initialization failed: ${error.message}`, true);
-  }
-}
-
-createForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!currentUser) return;
-  const name = document.querySelector('#class-name').value.trim();
-  if (name.length < 2 || name.length > 80) {
-    showStatus('Class name must contain 2–80 characters.', true);
-    return;
-  }
-  createButton.disabled = true;
-  showStatus('Creating class...');
-  try {
-    const { data, error } = await client.rpc('create_class', { p_name: name });
-    if (error) throw error;
-    const created = Array.isArray(data) ? data[0] : data;
-    showStatus(`Class created. Invitation code: ${created.class_join_code}`);
-    createForm.reset();
-    await loadClasses();
-  } catch (error) {
-    showStatus(`Cannot create class: ${error.message}`, true);
-  } finally {
-    createButton.disabled = false;
-  }
-});
-
-joinForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!currentUser) return;
-  const code = document.querySelector('#join-code').value.trim().toUpperCase();
-  if (!/^[A-F0-9]{16}$/.test(code)) {
-    showStatus('Enter the 16-character hexadecimal invitation code.', true);
-    return;
-  }
-  joinButton.disabled = true;
-  showStatus('Joining class...');
-  try {
-    const { data, error } = await client.rpc('join_class', { p_code: code });
-    if (error) throw error;
-    const joined = Array.isArray(data) ? data[0] : data;
-    showStatus(`Joined: ${joined.class_name}`);
-    joinForm.reset();
-    await loadClasses();
-  } catch (error) {
-    showStatus(`Cannot join class: ${error.message}`, true);
-  } finally {
-    joinButton.disabled = false;
-  }
-});
-
-refreshButton.addEventListener('click', () => {
-  loadClasses().catch(error => showStatus(error.message, true));
-});
-
-document.querySelector('#signout').addEventListener('click', async () => {
-  if (!client) return;
-  const { error } = await client.auth.signOut();
-  if (error) {
-    showStatus(`Sign out failed: ${error.message}`, true);
-  } else {
-    window.location.replace('index.html');
-  }
-});
-
+$('#class-select').addEventListener('change',async e=>{try{await activateClass(e.target.value);const url=new URL(location.href);url.searchParams.set('class',e.target.value);history.replaceState(null,'',url);}catch(err){status(err.message,true)}});
+$('#show-deadlines').addEventListener('click',()=>{if(user&&classId){renderDeadlineAlert(tasks,user.id,classId,{force:true});if($('#deadline-alert').hidden)toast(t('none'))}});
+async function init(){if(!requireConfigured($('#status')))return;setupCommon(client,()=>{renderShortcuts();renderSummary()});try{const {data:{user:authUser},error}=await client.auth.getUser();if(error||!authUser){location.replace('login.html');return;}user=authUser;showUser(user.email);await refreshClasses();}catch(e){status(`Could not load dashboard: ${e.message}`,true)}}
 await init();

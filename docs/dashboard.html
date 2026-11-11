@@ -1,48 +1,39 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | BackOnTrack</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen" style="font-family:Inter,system-ui,sans-serif">
-  <nav class="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10">
-    <a class="text-indigo-400 font-bold text-2xl" href="index.html">BackOnTrack</a>
-    <button id="signout" type="button" class="text-sm px-4 py-2 rounded-lg border border-gray-600 hover:bg-gray-700">Sign out</button>
-  </nav>
-  <main class="max-w-5xl mx-auto mt-12 md:mt-16 px-6 pb-16">
-    <h1 class="text-4xl font-bold mb-3">Your dashboard</h1>
-    <p class="text-gray-300 mb-8">Logged in as <span id="email">Checking session...</span></p>
-    <section class="grid md:grid-cols-2 gap-5 mb-8" aria-label="Manage classes">
-      <form id="create-class-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-4">
-        <h2 class="text-xl font-semibold">Create a class</h2>
-        <label for="class-name" class="block text-sm text-gray-300">Class name</label>
-        <input id="class-name" name="class-name" minlength="2" maxlength="80" required autocomplete="off"
-               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white"
-               placeholder="e.g. Physics 12A">
-        <button id="create-class-button" type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Create class</button>
-      </form>
-      <form id="join-class-form" class="bg-white/10 border border-white/20 rounded-xl p-6 space-y-4">
-        <h2 class="text-xl font-semibold">Join a class</h2>
-        <label for="join-code" class="block text-sm text-gray-300">16-character invitation code</label>
-        <input id="join-code" name="join-code" minlength="16" maxlength="16" required autocomplete="off" spellcheck="false"
-               class="w-full bg-gray-900/80 border border-gray-600 rounded-lg px-3 py-3 text-white uppercase tracking-widest"
-               placeholder="e.g. A1B2C3D4E5F60708">
-        <button id="join-class-button" type="submit" class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50">Join class</button>
-      </form>
-    </section>
-    <p id="status" role="status" aria-live="polite" class="text-sm text-gray-200 mb-5 min-h-6"></p>
-    <section class="bg-white/10 border border-white/20 rounded-xl p-6" aria-label="Your classes">
-      <div class="flex justify-between items-center mb-4 gap-3">
-        <h2 class="text-xl font-semibold">Your classes</h2>
-        <button id="refresh-classes" type="button" class="text-sm rounded-lg border border-gray-600 px-3 py-2 hover:bg-gray-700">Refresh</button>
-      </div>
-      <ul id="classes-list" class="space-y-3"><li class="text-gray-400">Loading classes...</li></ul>
-    </section>
-    <p class="text-sm text-gray-400 mt-6">Select a class above to manage subjects, personal tasks, deadlines and progress. Study materials and AI tools follow next.</p>
-  </main>
-  <script type="module" src="assets/js/dashboard.js?v=phase3-1"></script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f6ff"><title>Dashboard | BackOnTrack</title><link rel="stylesheet" href="assets/css/app-v4.css?v=4.1"></head><body><header class="site-header"><div class="shell"><nav class="nav" aria-label="Main navigation">
+  <a class="nav-logo" href="dashboard.html">BackOnTrack<span style="color:#9c8efb">.</span></a>
+  <div class="nav-links">
+    <a href="dashboard.html" aria-current="page" data-i18n="dashboard">Dashboard</a>
+    <a href="join.html"  data-i18n="join">Join Class</a>
+    <a id="nav-tasks" href="dashboard.html"  data-i18n="tasks">Tasks</a>
+    <span class="nav-soon" title="Coming in a future phase" data-i18n="ai">AI Recommendations</span>
+    <span class="nav-soon" title="Coming in a future phase" data-i18n="materials">Materials</span>
+  </div>
+  <div class="nav-tools">
+    <div class="language-switch" aria-label="Language"><button class="lang-btn" data-lang="en" aria-pressed="true" type="button">EN</button><button class="lang-btn" data-lang="ru" aria-pressed="false" type="button">RU</button><button class="lang-btn" data-lang="kz" aria-pressed="false" type="button">KZ</button></div>
+    <span class="user-chip" id="nav-user"></span>
+    <button class="button primary compact" type="button" id="signout" data-i18n="signout">Logout</button>
+  </div>
+</nav></div></header><main class="shell page">
+  <div class="page-head"><p class="mini-label" data-i18n="overview">Your class at a glance</p><h1 data-i18n="dashboard">Dashboard</h1><div class="title-rule"></div>
+    <div class="page-row"><div class="class-picker"><label for="class-select" data-i18n="selectClass">Select a class</label><select id="class-select" aria-label="Class"><option value="" data-i18n="checking">Checking session...</option></select></div>
+      <div class="side-nav"><button type="button" class="button outline compact" id="show-deadlines" aria-label="Upcoming deadlines"><span data-i18n="upcoming">Upcoming Deadlines</span> <span id="deadline-count" class="alert-counter" hidden></span></button><a href="join.html" class="button soft compact" data-i18n="createOrJoin">Create or join a class</a></div></div>
+  </div>
+  <p id="status" class="inline-status" role="status" aria-live="polite"></p>
+  <section aria-label="Class task statistics"><h3><span data-i18n="class">Class</span>: <span id="class-title">—</span></h3>
+    <div class="stats-layout"><div class="stats-cards">
+      <article class="card stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><div id="stat-total" class="stat-value">0</div><div class="stat-label" data-i18n="total">Total Tasks</div></div></article>
+      <article class="card stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m7 12 3 3 7-7"/></svg></span><div><div id="stat-completed" class="stat-value">0</div><div class="stat-label" data-i18n="completed">Completed</div></div></article>
+      <article class="card stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l4 3"/></svg></span><div><div id="stat-pending" class="stat-value">0</div><div class="stat-label" data-i18n="pending">Pending</div></div></article>
+      <article class="card stat-card"><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17 9 11l4 3 8-9"/><path d="M16 5h5v5"/></svg></span><div><div id="stat-progress" class="stat-value">0%</div><div class="stat-label" data-i18n="progress">Progress</div></div></article>
+    </div><article class="card chart-card"><div id="chart" class="donut" role="img" aria-label="Task completion"><div class="donut-center"><span id="chart-percent">0%</span><small data-i18n="progress">Progress</small></div></div><div class="legend"><span class="legend-row"><i class="swatch"></i><span data-i18n="completed">Completed</span></span><span class="legend-row"><i class="swatch amber"></i><span data-i18n="pending">Pending</span></span></div></article>
+    </div>
+  </section>
+  <section aria-label="Your Tasks"><div class="section-heading"><h2 data-i18n="yourTasks">Your Tasks</h2><a id="open-tasks" class="button soft compact" href="dashboard.html" data-i18n="openTasks">Manage tasks</a></div>
+    <div class="card table-card"><div class="table-scroll"><table class="task-table"><thead><tr><th data-i18n="tasks">Task</th><th data-i18n="description">Description</th><th data-i18n="notes">Notes</th><th data-i18n="deadline">Deadline</th><th data-i18n="status">Status</th></tr></thead><tbody id="tasks-tbody"><tr><td colspan="5" class="empty">Loading tasks...</td></tr></tbody></table></div></div>
+  </section>
+  <section aria-label="Your Classes"><div class="section-heading"><h2 data-i18n="yourClasses">Your classes</h2><a class="button outline compact" href="join.html" data-i18n="createOrJoin">Create or join a class</a></div><div class="quick-links" id="class-shortcuts"></div></section>
+  <p class="page-footer" data-i18n="soonText">File uploads and AI recommendations will be connected in later phases.</p>
+</main><aside id="deadline-alert" class="floating-alert" role="alert" aria-label="Upcoming deadlines" hidden>
+<div class="title"><span data-i18n="upcoming">Upcoming Deadlines</span><button id="deadline-close" type="button" aria-label="Close">×</button></div>
+<ul id="deadline-list" class="deadline-list"></ul>
+<button id="deadline-dismiss" type="button" class="button primary" data-i18n="dismiss">Dismiss</button>
+</aside><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><script type="module" src="assets/js/dashboard.js?v=4.1"></script></body></html>
