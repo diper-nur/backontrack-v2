@@ -120,7 +120,21 @@ Deno.serve(async(req:Request)=>{
     const {data:{user},error:authError}=await auth.auth.getUser(bearer);
     if(authError||!user)return respond(req,{error:'Session expired. Sign in again'},401);
     userId=user.id;
-    admin=createClient(conf.url,conf.secretKey,{auth:{persistSession:false,autoRefreshToken:false}});
+    // New sb_secret_* keys must go in `apikey`, never `Authorization: Bearer`.
+    // Legacy service_role JWT keys keep their original header behaviour.
+    admin=createClient(conf.url,conf.secretKey,{
+      auth:{persistSession:false,autoRefreshToken:false},
+      global:{
+        fetch:(input,init)=>{
+          const headers=new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
+          if(conf.secretKey.startsWith('sb_secret_')){
+            headers.delete('authorization');
+            headers.set('apikey',conf.secretKey);
+          }
+          return fetch(input,{...init,headers});
+        }
+      }
+    });
     const body=await req.json();
     const kind=body.kind==='material'?'material':body.kind==='recovery'?'recovery':null;
     const language=langs[body.language]?body.language:'en';
@@ -134,7 +148,12 @@ Deno.serve(async(req:Request)=>{
     if(kind==='material'){
       materialId=body.material_id;
       const {data:material,error:me}=await admin.from('materials').select('id,class_id,title,description,uploaded_by').eq('id',materialId).single();
-      if(me||!material)return respond(req,{error:'Material not found'},404);
+      if(me){
+        console.error('Material lookup failed:',me.code,me.message);
+        if(me.code==='PGRST116')return respond(req,{error:'Material not found'},404);
+        return respond(req,{error:'Database lookup failed. Check Edge Function logs.'},500);
+      }
+      if(!material)return respond(req,{error:'Material not found'},404);
       classId=material.class_id;
       const {data:membership}=await admin.from('class_members').select('user_id').eq('class_id',classId).eq('user_id',userId).maybeSingle();
       if(!membership)return respond(req,{error:'You are not a member of this class'},403);
